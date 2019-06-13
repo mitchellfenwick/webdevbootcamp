@@ -112,6 +112,6 @@ app.delete("/blogs/:id", function(req, res){
 });
 
 
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080, "127.0.0.1", function(){
     console.log("Server is running");
 });
