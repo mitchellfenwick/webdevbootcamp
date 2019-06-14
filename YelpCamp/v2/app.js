@@ -82,6 +82,6 @@ app.post("/campgrounds", function(req, res){
    //redirect back to campgrounds page
 });
 
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080, "127.0.0.1", function(){
     console.log("The Yelp Camp server has started");
 });
