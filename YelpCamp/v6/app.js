@@ -2,8 +2,11 @@ var express    = require("express"),
     app        = express(),
     bodyParser = require("body-parser"),
     mongoose   = require("mongoose"),
+    passport   = require("passport"),
+    LocalStrategy = require("passport-local"),
     Campground = require("./models/campground"),
     Comment    = require("./models/comment");
+    User       = require("./models/user"),
     seedDB     = require("./seeds");
 
 
@@ -14,6 +17,19 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
 seedDB();
+
+// PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    secret: "Avatar the last airbender",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Campground.create(
 //     {
@@ -124,6 +140,15 @@ app.post("/campgrounds/:id/comments", function(req, res){
             });
         }
     })    
+});
+
+// ====================================
+// Auth Routes
+// ====================================
+
+// Show register form
+app.get("/register", function(req, res){
+    res.render("register");
 });
 
 app.listen(8080, "127.0.0.1", function(){
