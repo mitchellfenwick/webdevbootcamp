@@ -69,6 +69,17 @@ router.put("/:comment_id", function(req, res){
     });
 });
 
+// Destroy route
+router.delete("/:comment_id", function(req, res){
+    Comment.findByIdAndRemove(req.params.comment_id, function(err){
+        if (err) {
+            res.redirect("/campgrounds/" + req.params.id);
+        } else {
+            res.redirect("/campgrounds/" + req.params.id);
+        }
+    })
+});
+
  // Middleware
  // Checks if a user is logged in
  function isLoggedIn(req, res, next){
