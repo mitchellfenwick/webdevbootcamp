@@ -31,8 +31,9 @@ router.get("/new", middleware.isLoggedIn, function(req, res) {
 router.get("/:id", function(req, res){
     //find the campground with provided id
     Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
-       if (err){
-           console.log(err);
+       if (err || !foundCampground){
+           req.flash("error", "Campground not found");
+           res.redirect("back");
        } else {
             res.render("campgrounds/show", {campground:foundCampground}); 
        }
@@ -43,23 +44,24 @@ router.get("/:id", function(req, res){
 
 // Create campground
 router.post("/", middleware.isLoggedIn, function(req, res){
-   //get data from form and add to campgrounds array
-   var name = req.body.name
-   var image = req.body.image
-   var description = req.body.description;
-   var author = {
-       id: req.user._id,
-       username: req.user.username
-   }
-   var newCampground = {name: name, image: image, description: description, author: author};
-   // Create a new campground and save to DB
-   Campground.create(newCampground, function(err, newlyCreated){
-      if (err) {
-          console.log(err);
-      } else {
-          res.redirect("/campgrounds");
-      }
-   });
+    //get data from form and add to campgrounds array
+    var name = req.body.name
+    var image = req.body.image
+    var description = req.body.description;
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    }
+    var newCampground = {name: name, image: image, description: description, author: author};
+    // Create a new campground and save to DB
+    Campground.create(newCampground, function(err, newlyCreated){
+        if (err) {
+            console.log(err);
+        } else {
+            req.flash("success", "Successfully updated campground");
+            res.redirect("/campgrounds");
+        }
+    });
 
    //redirect back to campgrounds page
 });
@@ -81,9 +83,9 @@ router.put("/:id", middleware.checkCampgroundOwnership, function(req, res){
     // Find and update the correct campground
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
         if (err) {
-            console.log(err);
             res.redirect("campgrounds");
         } else {
+            req.flash("success", "Successfully deleted campground");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
